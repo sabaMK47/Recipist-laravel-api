@@ -12,25 +12,17 @@ class Recipe extends Model
     }
 
     protected $casts = [
-        'tags' => 'array',
-        'nutrition' => 'array',
-        'steps' => 'array',
-        'ingredients' => 'array',
-        'submitted' => 'date',
+        'directions' => 'array',
+        'NER' => 'array',
+      
     ];
     
     protected $fillable = [
-        'name',
-        'minutes',
-        'contributor_id',
-        'submitted',
-        'tags',
-        'nutrition',
-        'n_steps',
-        'steps',
-        'description',
-        'ingredients',
-        'n_ingredients',
+        'title',
+        'directions',
+        'NER',
+        'genre',
+        'label',
     ];
     
 

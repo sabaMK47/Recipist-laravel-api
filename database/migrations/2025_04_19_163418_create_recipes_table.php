@@ -13,17 +13,11 @@ return new class extends Migration
     {
         Schema::create('recipes', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->integer('minutes')->nullable();
-            $table->unsignedBigInteger('contributor_id')->nullable();
-            $table->date('submitted')->nullable();
-            $table->json('tags')->nullable();
-            $table->json('nutrition')->nullable();
-            $table->integer('n_steps')->nullable();
-            $table->json('steps')->nullable();
-            $table->text('description')->nullable();
-            $table->json('ingredients')->nullable();
-            $table->integer('n_ingredients')->nullable();
+            $table->string('title');
+            $table->json('directions')->nullable();
+            $table->json('NER')->nullable();
+            $table->string('genre')->nullable();
+            $table->integer('label')->nullable();
             $table->timestamps();
         });
         
