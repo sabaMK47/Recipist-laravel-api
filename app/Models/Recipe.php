@@ -3,13 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Scout\Searchable;
 
 class Recipe extends Model
 {
-    public function ingredients()
-    {
-        return $this->belongsToMany(Ingredient::class);
-    }
+    use Searchable;
+    // public function ingredients()
+    // {
+    //     return $this->belongsToMany(Ingredient::class);
+    // }
 
     protected $casts = [
         'directions' => 'array',
@@ -24,6 +26,13 @@ class Recipe extends Model
         'genre',
         'label',
     ];
-    
+
+    public function toSearchableArray()
+    {
+        return [
+            'title' => $this->title,
+            'genre' => $this->genre,
+        ];
+    }
 
 }
