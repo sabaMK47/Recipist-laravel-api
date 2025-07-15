@@ -13,6 +13,7 @@ class Kernel extends HttpKernel
         // \App\Http\Middleware\TrustHosts::class,
         \App\Http\Middleware\TrustProxies::class,
         \Illuminate\Http\Middleware\HandleCors::class,
+        \Fruitcake\Cors\HandleCors::class,
         \App\Http\Middleware\PreventRequestsDuringMaintenance::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \App\Http\Middleware\TrimStrings::class,
@@ -36,6 +37,7 @@ class Kernel extends HttpKernel
             'throttle:api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+            \Fruitcake\Cors\HandleCors::class,
 
         ],
     ];
@@ -48,4 +50,24 @@ class Kernel extends HttpKernel
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         // add more if needed
     ];
+
+       /**
+     * Define the application's command schedule.
+     */
+    protected function schedule(Schedule $schedule): void
+    {
+        $schedule->command('recipes:fetch-images')
+            ->hourly()
+            ->withoutOverlapping();
+    }
+
+    /**
+     * Register the commands for the application.
+     */
+    protected function commands(): void
+    {
+        $this->load(__DIR__.'/Commands');
+
+        require base_path('routes/console.php');
+    }
 }

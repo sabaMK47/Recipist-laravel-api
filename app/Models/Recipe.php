@@ -7,32 +7,33 @@ use Laravel\Scout\Searchable;
 
 class Recipe extends Model
 {
-    use Searchable;
-    // public function ingredients()
-    // {
-    //     return $this->belongsToMany(Ingredient::class);
-    // }
+    // use Searchable;
+    public function ingredients()
+    {
+        return $this->belongsToMany(Ingredient::class);
+    }
 
     protected $casts = [
-        'directions' => 'array',
-        'NER' => 'array',
-      
+        'tags' => 'array',
+        'steps' => 'array',
+        'nutrition' => 'array',
     ];
     
     protected $fillable = [
-        'title',
-        'directions',
-        'NER',
-        'genre',
-        'label',
+        'name',
+        'minutes',
+        'tags',
+        'nutrition',
+        'steps',
+        'description',
     ];
 
-    public function toSearchableArray()
-    {
-        return [
-            'title' => $this->title,
-            'genre' => $this->genre,
-        ];
-    }
+    // public function toSearchableArray()
+    // {
+    //     return [
+    //         'name' => $this->name,
+    //         'tags' => $this->tags,
+    //     ];
+    // }
 
 }

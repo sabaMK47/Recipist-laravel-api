@@ -7,37 +7,58 @@ use App\Models\Recipe;
 use App\Models\Ingredient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Cache;
+
 
 class RecipeController extends Controller
 {
     public function index(Request $request)
-{
-    $query = Recipe::query();
+    {
+        $query = Recipe::query();
 
-    // Filter by ingredient keyword (matches NER array content)
-    if ($request->has('ingredients')) {
-        $ingredients = explode(',', $request->ingredients);
-        foreach ($ingredients as $ingredient) {
-            $query->whereJsonContains('NER', trim($ingredient));
+        // Filter by ingredients (optional: update this to your new logic)
+        if ($request->has('ingredients')) {
+            $ingredients = explode(',', $request->ingredients);
+            foreach ($ingredients as $ingredient) {
+                $query->whereHas('ingredients', function ($q) use ($ingredient) {
+                    $q->where('name', 'like', '%' . trim($ingredient) . '%');
+                });
+            }
         }
+
+        // Filter by title
+        if ($request->has('title')) {
+            $query->where('name', 'like', '%' . $request->title . '%');
+        }
+
+        // Filter by tags (match any)
+        if ($request->has('tags')) {
+            $tags = explode(',', $request->tags);
+            foreach ($tags as $tag) {
+                $query->whereJsonContains('tags', trim($tag));
+            }
+        }
+
+        return response()->json($query->with('ingredients')->paginate(20));
     }
 
-    if ($request->has('title')) {
-        $query->where('title', 'like', '%' . $request->title . '%');
+    public function show($id)
+    {
+        $recipe = Recipe::with('ingredients')->findOrFail($id);
+        return response()->json($recipe);
     }
 
-    if ($request->has('genre')) {
-        $query->where('genre', $request->genre);
+   public function random()
+    {
+        // Cache the random recipe for 24 hours (1440 minutes)
+        $recipe = Cache::remember('daily_random_recipe', 60 * 24, function () {
+            return Recipe::with('ingredients')->inRandomOrder()->first();
+        });
+
+        return response()->json($recipe);
     }
 
-    return response()->json($query->paginate(20));
-}
 
-public function show($id)
-{
-    $recipe = Recipe::findOrFail($id);
-    return response()->json($recipe);
-}
 
 
 }
