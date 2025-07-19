@@ -8,13 +8,12 @@ use App\Http\Controllers\Api\RecipeController;
 //     return $request->user();
 // })->middleware('auth:sanctum');
 
-Route::get('/recipes/random', [RecipeController::class, 'random']);
-
 Route::get('/recipes', [RecipeController::class, 'index']);
 
+Route::get('/recipes/random', [RecipeController::class, 'random']);
+
+Route::get('/recipes/search', [RecipeController::class, 'search']);
+
 Route::get('/recipes/{id}', [RecipeController::class, 'show']);
-
-
-
 
 ?>

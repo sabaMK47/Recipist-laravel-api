@@ -8,6 +8,8 @@ use App\Models\Ingredient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Cache;
+use App\Services\ElasticsearchService;
+
 
 
 class RecipeController extends Controller
@@ -56,6 +58,29 @@ class RecipeController extends Controller
         });
 
         return response()->json($recipe);
+    }
+
+    public function search(Request $request,ElasticsearchService $es){
+        
+        $query = $request->input('q');
+
+        $response = $es->getClient()->search([
+            'index' => 'recipes',
+            'body' => [
+                'query' => [
+                    'match' => [
+                        'name' => [
+                            'query' => $query,
+                            'fuzziness' => 'AUTO', // allow typos like "ckicken" instead of "chicken"
+                        ]
+                    ]
+                ]
+            ]
+        ]);
+
+        $results = collect($response['hits']['hits'])->pluck('_source');
+
+        return response()->json($results);
     }
 
 
