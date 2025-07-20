@@ -61,6 +61,11 @@ class Kernel extends HttpKernel
             ->withoutOverlapping();
     }
 
+    protected $commands = [
+    \App\Console\Commands\DeleteRecipesElasticsearchIndex::class,
+    ];
+
+
     /**
      * Register the commands for the application.
      */

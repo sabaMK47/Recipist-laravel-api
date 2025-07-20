@@ -60,19 +60,42 @@ class RecipeController extends Controller
         return response()->json($recipe);
     }
 
-    public function search(Request $request,ElasticsearchService $es){
-        
+     public function search(Request $request, ElasticsearchService $es)
+    {
         $query = $request->input('q');
+        $ingredients = $request->input('ingredients'); // expects comma-separated
+
+        $must = [];
+
+        if ($query) {
+            $must[] = [
+                'match' => [
+                    'name' => [
+                        'query' => $query,
+                        'fuzziness' => 'AUTO'
+                    ]
+                ]
+            ];
+        }
+
+        if ($ingredients) {
+            $ingredientArray = array_map('trim', explode(',', $ingredients));
+            foreach ($ingredientArray as $ingredient) {
+                $must[] = [
+                    'match' => [
+                        'ingredients' => $ingredient
+                    ]
+                ];
+            }
+        }
 
         $response = $es->getClient()->search([
             'index' => 'recipes',
-            'body' => [
+            'body'  => [
+                'size' => 20,
                 'query' => [
-                    'match' => [
-                        'name' => [
-                            'query' => $query,
-                            'fuzziness' => 'AUTO', // allow typos like "ckicken" instead of "chicken"
-                        ]
+                    'bool' => [
+                        'must' => $must
                     ]
                 ]
             ]
@@ -82,6 +105,7 @@ class RecipeController extends Controller
 
         return response()->json($results);
     }
+
 
 
 

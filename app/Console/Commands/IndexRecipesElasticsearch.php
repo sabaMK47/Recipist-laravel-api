@@ -18,7 +18,10 @@ class IndexRecipesElasticsearch extends Command
                     'index' => 'recipes',
                     'id'    => $recipe->id,
                     'body'  => [
+                        'id'=>$recipe->id,
                         'name' => $recipe->name,
+                        'description' => $recipe->description,
+                        'minutes' => $recipe->minutes,
                         'ingredients' => $recipe->ingredients->pluck('name')->toArray(),
                     ],
                 ]);

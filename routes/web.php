@@ -4,9 +4,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\RecipeController;
 use App\Models\Recipe;
 
-Route::get('/',dd('welcome'));
-
-
 // Route::post('/login',[AuthController::class,'login']);
 // Route::post('/verifyMobile',[AuthController::class,'verifyMobile']);
 

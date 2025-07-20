@@ -8,6 +8,10 @@ use App\Http\Controllers\Api\RecipeController;
 //     return $request->user();
 // })->middleware('auth:sanctum');
 
+Route::options('{any}', function () {
+    return response()->json([], 200);
+})->where('any', '.*');
+
 Route::get('/recipes', [RecipeController::class, 'index']);
 
 Route::get('/recipes/random', [RecipeController::class, 'random']);
