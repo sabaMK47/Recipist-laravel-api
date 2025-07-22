@@ -3,74 +3,63 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    public function login(Request $request){
+    public function register(Request $request)
+    {
+        $fields = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|unique:users,email',
+            'password' => 'required|string|min:6|confirmed', // frontend should send `password_confirmation`
+        ]);
 
-        if(Cache::has("authData")){
-            Cache::forget("authData");
-        }
+        $user = User::create([
+            'name' => $fields['name'],
+            'email' => $fields['email'],
+            'password' => bcrypt($fields['password']),
+        ]);
 
-        $vCode = 1234;
-
-        $authData = [
-            'vCode' => $vCode,
-            'mobile' => $request,
-        ];
-
-        Cache::put('authData',$authData , 120);
-
-        $response = [
-            'status'=> 'success',
-        ];
-
-        return response()->json($response);
+        $token = $user->createToken('AUTH_TOKEN')->plainTextToken;
+        return response()->json([
+            'user' => $user,
+            'token' => $token,
+        ], 201);
     }
 
-    public function verifyMobile(Request $request){
-        if(Cache::has('authData')){
-            $authData = Cache::get('authData');
-            if($request->verifyCode == $authData['vCode']){
-                $user = User::where('mobile',$authData['mobile'])->first();
-                if($user){
-                    $user->tokens()->where('name','AUTH_TOKEN')->delete();
-                    $token = $user->createToken('AUTH_TOKEN')->plainTextToken;
-                    $response = [
-                        'status' => 200,
-                        'token'=> $token,
-                    ];
-                }else{
-                    $user = User::create([
-                        'mobile'=> $authData['mobile'],
-                    ]);
-                    $token = $user->createToken('AUTH_TOKEN')->plainTextToken;
-                    $response = [
-                        'status' => 200,
-                        'token'=> $token,
-                    ];
-                }
-            }else{
-                $response = [
-                    'status'=> 403,
-                    'message'=> 'invalid verify code',
-                ];
-            }
-        }else{
-            $response = [
-                'status' => 402,
-                'message' => 'something went wrong, please try again!'
-            ];
+    public function login(Request $request)
+    {
+        $fields = $request->validate([
+            'email' => 'required|string|email',
+            'password' => 'required|string',
+        ]);
+
+        $user = User::where('email', $fields['email'])->first();
+
+        if (!$user || !Hash::check($fields['password'], $user->password)) {
+            throw ValidationException::withMessages([
+                'email' => ['The provided credentials are incorrect.'],
+            ]);
         }
-        return response()->json($response);
+
+        // Remove previous tokens (optional)
+        $user->tokens()->where('name', 'AUTH_TOKEN')->delete();
+
+        $token = $user->createToken('AUTH_TOKEN')->plainTextToken;
+
+        return response()->json([
+            'user' => $user,
+            'token' => $token,
+        ]);
     }
 
-    public function logout(){
-        auth()->user()->tokens()->delete();
-        $response = [
-            'status'=> 200,
-            'message'=> 'you are logged out',
-        ];
-        return response()->json($response);
+    public function logout(Request $request)
+    {
+        $request->user()->tokens()->delete();
+
+        return response()->json(['message' => 'Logged out']);
     }
 }
