@@ -2,15 +2,15 @@
 
 return [
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie','login','logout','register'],
+    'paths' => ['api/*', 'login', 'logout','register'],
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['https://recipist-frontend.vercel.app','http://localhost:5173','http://127.0.0.1:5173'],
+    'allowed_origins' => ['https://recipist-frontend.vercel.app','http://localhost:5173','http://127.0.0.1:5173','https://recipist-backend.ir'],
 
     'allowed_origins_patterns' => [],
 
-    'allowed_headers' => ['Content-Type', 'X-Requested-With', 'Authorization'],
+    'allowed_headers' => ['*'],
 
     'exposed_headers' => [],
 
