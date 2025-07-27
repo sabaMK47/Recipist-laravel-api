@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Scout\Searchable;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+
 
 class Recipe extends Model
 {
@@ -28,12 +30,9 @@ class Recipe extends Model
         'description',
     ];
 
-    // public function toSearchableArray()
-    // {
-    //     return [
-    //         'name' => $this->name,
-    //         'tags' => $this->tags,
-    //     ];
-    // }
+    public function favoritedByUsers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'user_favorites', 'recipe_id', 'user_id');
+    }
 
 }

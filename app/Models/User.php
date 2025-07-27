@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 
 class User extends Authenticatable
@@ -48,9 +49,9 @@ class User extends Authenticatable
         ];
     }
 
-    public function favorites()
+    public function favorites(): BelongsToMany
     {
-        return $this->belongsToMany(Recipe::class, 'favorites', 'user_id', 'recipe_id');
+        return $this->belongsToMany(Recipe::class, 'user_favorites', 'user_id', 'recipe_id');
     }
 
 }
