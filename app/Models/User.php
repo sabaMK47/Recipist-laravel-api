@@ -49,7 +49,7 @@ class User extends Authenticatable
         ];
     }
 
-    public function favorites(): BelongsToMany
+    public function favorites()
     {
         return $this->belongsToMany(Recipe::class, 'user_favorites', 'user_id', 'recipe_id');
     }

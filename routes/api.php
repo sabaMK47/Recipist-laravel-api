@@ -6,10 +6,6 @@ use App\Http\Controllers\Api\RecipeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Api\UserFavoriteController;
 
-// Route::get('/user', function (Request $request) {
-//     return $request->user();
-// })->middleware('auth:sanctum');
-
 Route::options('{any}', function () {
     return response()->json([], 200);
 })->where('any', '.*');

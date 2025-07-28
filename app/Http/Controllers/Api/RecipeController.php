@@ -18,7 +18,7 @@ class RecipeController extends Controller
     {
         $query = Recipe::query();
 
-        // Filter by ingredients (optional: update this to your new logic)
+        // Filter by ingredients 
         if ($request->has('ingredients')) {
             $ingredients = explode(',', $request->ingredients);
             foreach ($ingredients as $ingredient) {
